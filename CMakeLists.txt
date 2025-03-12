@@ -8,4 +8,5 @@ add_executable(lab2 main.cpp
         linked_list.h
         array_list.cpp
         array_list.h
+        main.h
 )

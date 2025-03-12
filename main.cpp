@@ -2,21 +2,20 @@
 #include <fstream>
 #include <cstring>
 #include <filesystem>
+#include <vector>
 #include "array_list.h"
 #include "linked_list.h"
-
-void QueueWriteBinary(QueueArrayList queue, std::string filename);
-bool QueueReadBinary(QueueArrayList *array_list, QueueLinkedList *linked_list, std::string filename);
+#include "main.h"
 
 
-bool Condition1(int element, int n) {
+bool Condition1(const int element, const int n) {
     if (element <= n) {
         return true;
     }
     return false;
 }
 
-bool Condition2(int element, int n) {
+bool Condition2(const int element, const int n) {
     if ((element * element) * 2 < n) {
         return true;
     }
@@ -52,7 +51,7 @@ void UseLinkedList() {
         int number = std::stoi(number_str2);
         QueueLinkedListPush(&queue2, number);
     }
-    QueueLinkedList merged_list = QueueLinkedListMerge(queue2, queue, Condition1, 3);
+    QueueLinkedList merged_list = QueueLinkedListMerge(queue2, queue, Condition1, 100);
     std::cout << "Linked list\n";
 
     ListPrint(merged_list.list);
@@ -60,7 +59,7 @@ void UseLinkedList() {
     QueueLinkedListWriteBinary(merged_list, "../numbers");
     QueueLinkedList new_list = {};
     QueueReadBinary(nullptr,&new_list, "../numbers.ll");
-    std::cout << "LL From Binary\n";
+    std::cout << "Linked list From Binary\n";
     ListPrint(new_list.list);
 
 }
@@ -94,7 +93,7 @@ void UseArrayList() {
         int number = std::stoi(number_str2);
         QueueArrayListPushBack(&queue2, number);
     }
-    QueueArrayList merged_list = QueueArrayListMerge(queue2, queue);
+    QueueArrayList merged_list = QueueArrayListMerge(queue2, queue, Condition2, 100);
     std::cout << "Array list \n";
 
     QueueArrayListPrint(merged_list);
@@ -106,7 +105,7 @@ void UseArrayList() {
     QueueArrayListPrint(new_list);
 }
 
-void QueueWriteBinary(QueueArrayList queue, std::string filename) {
+void QueueWriteBinary(const QueueArrayList &queue, const std::string& filename) {
     std::ofstream fs(filename, std::ios::out | std::ios::binary);
     if (!fs.is_open()) {
         std::cout << "Could not open file: " << filename << std::endl;
@@ -115,7 +114,7 @@ void QueueWriteBinary(QueueArrayList queue, std::string filename) {
     fs.write(reinterpret_cast<char *>(queue.data), queue.size * 4);
 }
 
-bool QueueReadBinary(QueueArrayList *array_list, QueueLinkedList *linked_list, std::string filename) {
+bool QueueReadBinary(QueueArrayList *array_list, QueueLinkedList *linked_list, const std::string& filename) {
     std::filesystem::path file_path = filename;
     if (file_path.extension() == ".arr" && array_list != nullptr) {
         std::ifstream fs(filename, std::ios::in | std::ios::binary);
@@ -147,12 +146,12 @@ bool QueueReadBinary(QueueArrayList *array_list, QueueLinkedList *linked_list, s
 
         std::vector<char> buffer(size);
         file.read(buffer.data(), size);
-        QueueArrayList array_list = QueueArrayListWithCapacity(size / 4);
-        std::memcpy(array_list.data, buffer.data(), buffer.size());
-        array_list.size = size / 4;
+        QueueArrayList temp_array_list = QueueArrayListWithCapacity(size / 4);
+        std::memcpy(temp_array_list.data, buffer.data(), buffer.size());
+        temp_array_list.size = size / 4;
 
-        for (size_t i = 0; i < array_list.size; i++) {
-            QueueLinkedListPush(linked_list, array_list.data[i]);
+        for (size_t i = 0; i < temp_array_list.size; i++) {
+            QueueLinkedListPush(linked_list, temp_array_list.data[i]);
         }
     }
     return false;

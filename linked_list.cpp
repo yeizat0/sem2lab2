@@ -3,9 +3,8 @@
 #include <sstream>
 #include <fstream>
 #include "linked_list.h"
-
+#include "main.h"
 #include "array_list.h"
-void QueueWriteBinary(QueueArrayList queue, std::string filename);
 
 Node *NodeNew(const int number) {
     return new Node{.number = number, .prev = nullptr, .next = nullptr};

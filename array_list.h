@@ -23,7 +23,8 @@ QueueArrayList QueueArrayListWithCapacity(size_t capacity);
 
 void QueueArrayListPrint(const QueueArrayList &list);
 
-QueueArrayList QueueArrayListMerge(QueueArrayList left, QueueArrayList right);
+QueueArrayList QueueArrayListMerge(const QueueArrayList &left, const QueueArrayList &right, bool (*filter)(int element, int n),
+                                   const int n);
 
 void QueueArrayListWriteBinary(QueueArrayList queue, std::string filename);
 

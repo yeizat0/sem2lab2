@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include "array_list.h"
-void QueueWriteBinary(QueueArrayList queue, std::string filename);
+#include "main.h"
 #include <cstring>
 
 QueueArrayList QueueArrayListWithCapacity(size_t capacity) {
@@ -74,26 +74,43 @@ void QueueArrayListPrint(const QueueArrayList &list) {
     std::cout << std::endl;
 }
 
-QueueArrayList QueueArrayListMerge(QueueArrayList left, QueueArrayList right) {
-    QueueArrayList list = QueueArrayListWithCapacity(left.capacity + right.capacity);
+QueueArrayList QueueArrayListMerge(const QueueArrayList &left, const QueueArrayList &right, bool (*filter)(int element, int n),
+                                   const int n) {
+    QueueArrayList temp_left = QueueArrayListWithCapacity(left.size);
+    for (size_t i = 0; i < left.size; i++) {
+        if (filter(left.data[i], n)) {
+            continue;
+        }
+        QueueArrayListPushBack(&temp_left, left.data[i]);
+    }
+    QueueArrayList temp_right = QueueArrayListWithCapacity(right.size);
+    for (size_t i = 0; i < right.size; i++) {
+        if (filter(right.data[i], n)) {
+            continue;
+        }
+        QueueArrayListPushBack(&temp_right, right.data[i]);
+    }
+
+    QueueArrayList list = QueueArrayListWithCapacity(temp_left.size + temp_right.size);
     int k = 0;
     int i = 0;
-    for (; i < left.size; i++) {
-        for (; k < right.size; k++) {
-            if (left.data[i] < right.data[k]) {
+    for (; i < temp_left.size; i++) {
+        for (; k < temp_right.size; k++) {
+            if (temp_left.data[i] < temp_right.data[k]) {
                 break;
             }
-            QueueArrayListPushBack(&list, right.data[k]);
+            QueueArrayListPushBack(&list, temp_right.data[k]);
         }
-        QueueArrayListPushBack(&list, left.data[i]);
+        QueueArrayListPushBack(&list, temp_left.data[i]);
     }
-    if (i >= left.size) {
-        while (k < right.size) {
-            QueueArrayListPushBack(&list, right.data[k]);
+    if (i >= temp_left.size) {
+        while (k < temp_right.size) {
+            QueueArrayListPushBack(&list, temp_right.data[k]);
             k++;
         }
     }
-
+    QueueArrayListDelete(&temp_left);
+    QueueArrayListDelete(&temp_right);
     return list;
 }
 
@@ -101,5 +118,3 @@ void QueueArrayListWriteBinary(QueueArrayList queue, std::string filename) {
     filename += ".arr";
     QueueWriteBinary(queue, filename);
 }
-
-

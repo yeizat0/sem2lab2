@@ -4,7 +4,6 @@
 
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
-#include <queue>
 
 struct Node {
     int number;
